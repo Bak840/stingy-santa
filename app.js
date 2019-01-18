@@ -29,57 +29,6 @@ var santa = {
     speed: 256
 }
 
-//v1
-// Load background image
-var drawBackground = function () {
-    context.drawImage(backgroundImg, 0, 0);
-}
-backgroundImg.onload = drawBackground;
-
-// Load the santa image
-var drawSanta = function () {
-    context.drawImage(santaImg, 0, sy, 64, 96, 0, 0, 64, 96);
-}
-santaImg.onload = drawSanta;
-
-document.onkeydown = function (e) {
-    if (direction[e.key] === undefined) {
-        return;
-    }
-    santa.sy = direction[e.key];
-
-    if (frame) {
-        santa.sx = 0;
-    }
-    else {
-        santa.sx = 146;
-    }
-
-    switch (e.key) {
-        case "ArrowDown":
-            santa.y += santa.speed * modifier;
-            break;
-        case "ArrowUp":
-            santa.y -= santa.speed * modifier;
-            break;
-        case "ArrowRight":
-            santa.x += santa.speed * modifier;
-            break;
-        case "ArrowLeft":
-            santa.x -= santa.speed * modifier;
-            break;
-        default:
-            break;
-    }
-
-    frame = !frame;
-
-    context.clearRect(0, 0, 800, 600);
-    drawBackground();
-    context.drawImage(santaImg, santa.sx, santa.sy, 64, 96, santa.x, santa.y, 64, 96);
-};
-
-/* //v2
 // Load background image
 var bgReady = false;
 backgroundImg.onload = function () {
@@ -162,4 +111,4 @@ var main = function () {
 var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
-main(); */
+main();
