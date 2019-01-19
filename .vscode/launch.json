@@ -8,7 +8,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch FISE 2 Javascript Project",
-            "url": "D:\\bakou\\Workspace\\FISE 2\\Javascript\\Projet\\Projet\\index.html",
+            "url": "D:\\bakou\\Workspace\\FISE 2\\Javascript\\Projet\\StingySanta\\index.html",
             "webRoot": "${workspaceFolder}"
         }
     ]
