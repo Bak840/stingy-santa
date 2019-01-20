@@ -1,12 +1,6 @@
-function Santa(sx, sy, x, y, height, width, imgSrc, context, speed, downDir, upDir, rightDir, leftDir, rightFoot, leftFoot) {
-    MobileSprite.call(this, sx, sy, x, y, height, width, imgSrc, context, speed, downDir, upDir, rightDir, leftDir, rightFoot, leftFoot);
+function Santa(x, y, context) {
+    MobileSprite.call(this, 0, 208, x, y, 96, 64, "ressources/sprites/santa.png", context, 2, 204, 14, 110, 302, 0, 146);
 
-    this.downDir = 204;
-    this.upDir = 14;
-    this.rightDir = 110;
-    this.leftDir = 302;
-    this.rightFoot = 0;
-    this.leftFoot = 146;
     this.giftNumber = 100;
     this.money = 100;
 }

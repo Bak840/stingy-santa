@@ -1,13 +1,14 @@
-function MobileSprite(sx, sy, x, y, height, width, imgSrc, context, speed) {
+//By default it is an elf
+function MobileSprite(sx, sy, x, y, height, width, imgSrc, context, speed, downDir, upDir, rightDir, leftDir, rightFoot, leftFoot) {
     Sprite.call(this, sx, sy, x, y, height, width, imgSrc, context);
 
     this.speed = speed;
-    this.downDir = 0;
-    this.upDir = 96;
-    this.rightDir = 64;
-    this.leftDir = 32;
-    this.rightFoot = 0;
-    this.leftFoot = 64;
+    this.downDir = downDir;
+    this.upDir = upDir;
+    this.rightDir = rightDir;
+    this.leftDir = leftDir;
+    this.rightFoot = rightFoot;
+    this.leftFoot = leftFoot;
 
     this.frontFootSetter = true;
     this.changeFootCounter = 0;
@@ -15,22 +16,6 @@ function MobileSprite(sx, sy, x, y, height, width, imgSrc, context, speed) {
 
 MobileSprite.prototype = Object.create(Sprite.prototype);
 MobileSprite.prototype.constructor = MobileSprite;
-
-MobileSprite.prototype.getX = function () {
-    return this.x;
-}
-
-MobileSprite.prototype.getY = function () {
-    return this.y;
-}
-
-MobileSprite.prototype.getHeight = function () {
-    return this.height;
-}
-
-MobileSprite.prototype.getWidth = function () {
-    return this.width;
-}
 
 MobileSprite.prototype.move = function (x, y) {
     this.changeOrientation(x, y);
