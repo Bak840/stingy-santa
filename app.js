@@ -23,7 +23,6 @@ var background = new Sprite(0, 0, 0, 0, 600, 800, "ressources/background.jpg", c
 
 var santa = new Santa(0, 208, 100, 100, 96, 64, "ressources/sprites/santa.png", context, 4);
 
-<<<<<<< HEAD
 // Update game objects - change player position based on key pressed
 document.onkeydown = function (e) {
     switch (e.key) {
@@ -50,60 +49,11 @@ document.onkeydown = function (e) {
         default:
             break;
     }
-=======
-// Handle keyboard controls
-var keysDown = {};
-// Check for keys pressed where key represents the keycode captured
-addEventListener("keydown", function (key) {
-    keysDown[key.keyCode] = true;
-
-}, false);
-addEventListener("keyup", function (key) {
-    delete keysDown[key.keyCode];
-
-}, false);
-
-
-// Update game objects - change player position based on key pressed
-function update() {
-    if (38 in keysDown) { // Player is holding up key
-        if (santa.getY() >= 20) {
-            santa.move(0, -1);
-        }
-
-    }
-    if (40 in keysDown) { // Player is holding down key
-        santa.sy = 204;
-        if (santa.getY() <= canvas.height - santa.getHeight()) {
-            santa.move(0, 1);
-        }
-
-    }
-    if (37 in keysDown) { // Player is holding left key
-        santa.sy = 302;
-        if (santa.getX() >= 0) {
-            santa.move(-1, 0);
-        }
-
-    }
-    if (39 in keysDown) { // Player is holding right key
-        santa.sy = 110;
-        if (santa.getX() <= canvas.width - santa.getWidth()) {
-            santa.move(1, 0);
-        }
-
-    }
-
->>>>>>> version-2
 };
 
 // Draw everything on the canvas
 var render = function () {
     //display the background
-<<<<<<< HEAD
-=======
-    //context.drawImage(backgroundImg, 0, 0);
->>>>>>> version-2
     background.display();
     //display the number of gifts left
     context.strokeText("Cadeaux : " + santa.getGiftNumber().toString(), 10, 20);
@@ -118,11 +68,6 @@ var render = function () {
 };
 
 function main() {
-<<<<<<< HEAD
-=======
-    // run the update function
-    update(0.01); // do not change
->>>>>>> version-2
     // run the render function
     render();
     // Request to do this again ASAP
@@ -131,10 +76,4 @@ function main() {
 
 // Cross-browser support for requestAnimationFrame
 var w = window;
-<<<<<<< HEAD
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
-=======
-requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
-
-main();
->>>>>>> version-2
