@@ -87,7 +87,7 @@ var render = function () {
 
 function main() {
     // run the update function
-    update(0.01); // do not change
+    update(); // do not change
     // run the render function
     render();
     // Request to do this again ASAP
