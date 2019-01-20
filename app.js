@@ -1,79 +1,77 @@
 var canvas = document.getElementById("cv");
 var context = canvas.getContext("2d");
 
-var direction = {
-    "ArrowRight": 110,
-    "ArrowLeft": 302,
-    "ArrowUp": 14,
-    "ArrowDown": 204
-};
+//count down to the actual date plus 3 minutes and 30 seconds that is 210,000 milliseconds
+var countDownDate = new Date(new Date().getTime() + 210000);
+//time left
+var timeLeft = "Temps restant : 3m30s";
 
-var sy = direction["ArrowDown"];
+// Update the count down every 1 second
+setInterval(function () {
+    // Find the distance between now and the count down date
+    var distance = countDownDate - new Date().getTime();;
 
-var frame = true;
-var modifier = 0.02;
+    // Time calculations for minutes and seconds
+    var minutesLeft = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var secondsLeft = Math.floor((distance % (1000 * 60)) / 1000);
+    timeLeft = "Temps restant : " + minutesLeft + "m" + secondsLeft + "s";
+}, 1000);
 
-// Load background image
-var backgroundImg = new Image(800, 600);
-backgroundImg.src = "ressources/background.jpg";
+var background = new Sprite(0, 0, 0, 0, 600, 800, "ressources/background.jpg", context);
 
-// Load the santa image
-var santaImg = new Image(66, 90);
-santaImg.src = "ressources/santa.png";
+var santa = new Santa(0, 208, 100, 100, 96, 64, "ressources/sprites/santa.png", context, 4);
 
-var santa = {
-    sx: 0,
-    sy: 208,
-    x: canvas.width / 2,
-    y: canvas.height / 2,
-    speed: 256
-}
-
-// Load background image
-var drawBackground = function () {
-    context.drawImage(backgroundImg, 0, 0);
-}
-backgroundImg.onload = drawBackground;
-
-// Load the santa image
-var drawSanta = function () {
-    context.drawImage(santaImg, 0, sy, 64, 96, 0, 0, 64, 96);
-}
-santaImg.onload = drawSanta;
-
+// Update game objects - change player position based on key pressed
 document.onkeydown = function (e) {
-    if (direction[e.key] === undefined) {
-        return;
-    }
-    santa.sy = direction[e.key];
-
-    if (frame) {
-        santa.sx = 0;
-    }
-    else {
-        santa.sx = 146;
-    }
-
     switch (e.key) {
         case "ArrowDown":
-            santa.y += santa.speed * modifier;
+            if (santa.getY() <= canvas.height - santa.getHeight()) {
+                santa.move(0, 1);
+            }
             break;
         case "ArrowUp":
-            santa.y -= santa.speed * modifier;
+            if (santa.getY() >= 20) {
+                santa.move(0, -1);
+            }
             break;
         case "ArrowRight":
-            santa.x += santa.speed * modifier;
+            if (santa.getX() <= canvas.width - santa.getWidth()) {
+                santa.move(1, 0);
+            }
             break;
         case "ArrowLeft":
-            santa.x -= santa.speed * modifier;
+            if (santa.getX() >= 0) {
+                santa.move(-1, 0);
+            }
             break;
         default:
             break;
     }
-
-    frame = !frame;
-
-    context.clearRect(0, 0, 800, 600);
-    drawBackground();
-    context.drawImage(santaImg, santa.sx, santa.sy, 64, 96, santa.x, santa.y, 64, 96);
 };
+
+// Draw everything on the canvas
+var render = function () {
+    //display the background
+    background.display();
+    //display the number of gifts left
+    context.strokeText("Cadeaux : " + santa.getGiftNumber().toString(), 10, 20);
+    //display the money left
+    var giftsTextWidth = context.measureText("Cadeaux : " + santa.getGiftNumber().toString()).width;
+    context.strokeText("Argent : " + santa.getMoney(), giftsTextWidth + 20, 20);
+    //display the time left
+    var timeLeftTextX = canvas.width - context.measureText(timeLeft).width - 10;
+    context.strokeText(timeLeft, timeLeftTextX, 20);
+    //display Santa Claus
+    santa.display();
+};
+
+function main() {
+    // run the render function
+    render();
+    // Request to do this again ASAP
+    requestAnimationFrame(main);
+};
+
+// Cross-browser support for requestAnimationFrame
+var w = window;
+requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
