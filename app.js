@@ -3,20 +3,10 @@ var context = canvas.getContext("2d");
 context.font = "15px Arial";
 context.strokeStyle = "red";
 
-//if true right foot in front otherwise left foot in front
-var footSetter = true;
-//change the foot in front every 10 frames
-var changeFootCounter = 0;
-//change santa's speed
-var speed = 0.02;
 //count down to the actual date plus 3 minutes and 30 seconds that is 210,000 milliseconds
 var countDownDate = new Date(new Date().getTime() + 210000);
 //time left
 var timeLeft = "Temps restant : 3m30s";
-//gifts left
-var giftsLeft = 100;
-//money left
-var moneyLeft = 100;
 
 // Update the count down every 1 second
 setInterval(function () {
@@ -29,49 +19,9 @@ setInterval(function () {
     timeLeft = "Temps restant : " + minutesLeft + "m" + secondsLeft + "s";
 }, 1000);
 
-//each arrow is linked to the y coordinate of the correspoding orientation of santa in the the santa sprite
-var direction = {
-    "ArrowRight": 110,
-    "ArrowLeft": 302,
-    "ArrowUp": 14,
-    "ArrowDown": 204
-};
+var background = new Sprite(0, 0, 0, 0, 600, 800, "ressources/background.jpg", context);
 
-//initialize the santa sprite to the down direction
-var sy = direction["ArrowDown"];
-
-// Load background image
-var backgroundImg = new Image(800, 600);
-backgroundImg.src = "ressources/background.jpg";
-
-// Load the santa image
-var santaImg = new Image(66, 90);
-santaImg.src = "ressources/sprites/santa.png";
-
-//santa sprite coordinates
-var santa = {
-    sx: 0,
-    sy: 208,
-    x: canvas.width / 2,
-    y: canvas.height / 2,
-    height: 96,
-    width: 64,
-    speed: 256
-}
-
-// Load background image
-var bgReady = false;
-backgroundImg.onload = function () {
-    // show the background image
-    bgReady = true;
-};
-
-// Load the santa image
-var santaReady = false;
-santaImg.onload = function () {
-    // show the here image
-    santaReady = true;
-};
+var santa = new Santa(0, 208, 100, 100, 96, 64, "ressources/sprites/santa.png", context, 4);
 
 // Handle keyboard controls
 var keysDown = {};
@@ -85,76 +35,54 @@ addEventListener("keyup", function (key) {
 
 }, false);
 
-//foot change when santa is moving 
-function updateFoot() {
-    if (changeFootCounter < 9) {
-        changeFootCounter++;
-    }
-    else {
-        footSetter = !footSetter;
-        changeFootCounter = 0;
-    }
-}
 
 // Update game objects - change player position based on key pressed
-function update(speed) {
-    if (footSetter) {
-        santa.sx = 0;
-    }
-    else {
-        santa.sx = 146;
-    }
-
+function update() {
     if (38 in keysDown) { // Player is holding up key
-        santa.sy = 14;
-        if (santa.y >= 20) {
-            santa.y -= santa.speed * speed;
-            updateFoot();
+        if (santa.getY() >= 20) {
+            santa.move(0, -1);
         }
 
     }
     if (40 in keysDown) { // Player is holding down key
         santa.sy = 204;
-        if (santa.y <= canvas.height - santa.height) {
-            santa.y += santa.speed * speed;
-            updateFoot();
+        if (santa.getY() <= canvas.height - santa.getHeight()) {
+            santa.move(0, 1);
         }
 
     }
     if (37 in keysDown) { // Player is holding left key
         santa.sy = 302;
-        if (santa.x >= 0) {
-            santa.x -= santa.speed * speed;
-            updateFoot();
+        if (santa.getX() >= 0) {
+            santa.move(-1, 0);
         }
+
     }
     if (39 in keysDown) { // Player is holding right key
         santa.sy = 110;
-        if (santa.x <= canvas.width - santa.width) {
-            santa.x += santa.speed * speed;
-            updateFoot();
+        if (santa.getX() <= canvas.width - santa.getWidth()) {
+            santa.move(1, 0);
         }
+
     }
 
 };
 
 // Draw everything on the canvas
 var render = function () {
-    if (bgReady) {
-        //display the background
-        context.drawImage(backgroundImg, 0, 0);
-        //display the number of gifts left
-        context.strokeText("Cadeaux : " + giftsLeft.toString(), 10, 20);
-        //display the money left
-        var giftsTextWidth = context.measureText("Cadeaux : " + giftsLeft.toString()).width;
-        context.strokeText("Argent : " + moneyLeft, giftsTextWidth + 20, 20);
-        //display the time left
-        var timeLeftTextX = canvas.width - context.measureText(timeLeft).width - 10;
-        context.strokeText(timeLeft, timeLeftTextX, 20);
-    }
-    if (santaReady) {
-        context.drawImage(santaImg, santa.sx, santa.sy, 64, 96, santa.x, santa.y, 64, 96);
-    }
+    //display the background
+    //context.drawImage(backgroundImg, 0, 0);
+    background.display();
+    //display the number of gifts left
+    context.strokeText("Cadeaux : " + santa.getGiftNumber().toString(), 10, 20);
+    //display the money left
+    var giftsTextWidth = context.measureText("Cadeaux : " + santa.getGiftNumber().toString()).width;
+    context.strokeText("Argent : " + santa.getMoney(), giftsTextWidth + 20, 20);
+    //display the time left
+    var timeLeftTextX = canvas.width - context.measureText(timeLeft).width - 10;
+    context.strokeText(timeLeft, timeLeftTextX, 20);
+    //display Santa Claus
+    santa.display();
 };
 
 function main() {
