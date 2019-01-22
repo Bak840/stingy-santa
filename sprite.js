@@ -1,4 +1,4 @@
-function Sprite(sx, sy, x, y, height, width, imgSrc, context) {
+function Sprite(sx, sy, x, y, height, width, imgSrc) {
     this.sx = sx;
     this.sy = sy;
     this.x = x;

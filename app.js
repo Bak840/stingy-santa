@@ -1,33 +1,35 @@
-var canvas = document.getElementById("cv");
-var context = canvas.getContext("2d");
+let canvas = document.getElementById("cv");
+let context = canvas.getContext("2d");
 context.font = "15px Arial";
 context.strokeStyle = "red";
 
 //count down to the actual date plus 3 minutes and 30 seconds that is 210,000 milliseconds
-var countDownDate = new Date(new Date().getTime() + 210000);
+let countDownDate = new Date(new Date().getTime() + 210000);
 //time left
-var timeLeft = "Temps restant : 3m30s";
+let timeLeft = "Temps restant : 3m30s";
 
-var background = new Sprite(0, 0, 0, 0, 600, 800, "ressources/background.jpg", context);
+let background = new Sprite(0, 0, 0, 0, 600, 800, "ressources/background.jpg", context);
 
-var santa = new Santa(400, 300, context);
+let santa = new Santa(400, 300, context);
 
-var treesOnTheMap = [];
+let treesOnTheMap = [];
 function spawnTrees() {
     treesOnTheMap = [];
     //generate a random number of trees between 1 and 3
-    let treesNumber = Math.floor(Math.random() * Math.floor(3)) + 2;
+    let treesNumber = Math.floor(Math.random() * Math.floor(3)) + 1;
     for (let i = 0; i < treesNumber; i++) {
         //generate a random boolean to decide if we should spawn a decorated tree or not
         if (Math.random() <= 0.33) {
-            let x = Math.floor(Math.random() * Math.floor(736));
+            let x = Math.floor(Math.random() * Math.floor(716)) + 20;
             let y = Math.floor(Math.random() * Math.floor(495)) + 20;
-            treesOnTheMap.push(new Tree(x, y, context, true));
+            //generate a decorated tree 33% of the time
+            treesOnTheMap.push(new Tree(x, y, true));
         }
         else {
-            let x = Math.floor(Math.random() * Math.floor(739));
+            let x = Math.floor(Math.random() * Math.floor(719)) + 20;
             let y = Math.floor(Math.random() * Math.floor(509)) + 20;
-            treesOnTheMap.push(new Tree(x, y, context, false));
+            //generate a non decorated tree 66% of the time
+            treesOnTheMap.push(new Tree(x, y, false));
         }
     }
 }
@@ -36,16 +38,16 @@ spawnTrees();
 // Update the count down every second
 setInterval(function () {
     // Find the distance between now and the count down date
-    var distance = countDownDate - new Date().getTime();;
+    let distance = countDownDate - new Date().getTime();;
 
     // Time calculations for minutes and seconds
-    var minutesLeft = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    var secondsLeft = Math.floor((distance % (1000 * 60)) / 1000);
+    let minutesLeft = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    let secondsLeft = Math.floor((distance % (1000 * 60)) / 1000);
     timeLeft = "Temps restant : " + minutesLeft + "m" + secondsLeft + "s";
 }, 1000);
 
 // Handle keyboard controls
-var keysDown = {};
+let keysDown = {};
 // Check for keys pressed where key represents the keycode captured
 addEventListener("keydown", function (key) {
     keysDown[key.keyCode] = true;
@@ -87,18 +89,15 @@ function update() {
 
     }
 
-    treesOnTheMap.forEach(function (tree) {
-        //TO DO : collisions conditions
-        if ((santa.getX() <= tree.getX() && tree.getX()<= santa.getX() + santa.getWidth() && santa.getY() == tree.getY()) || (santa.getX() == tree.getX() && santa.getY() == tree.getY() + tree.getHeight()) || (santa.getX() == tree.getX() + tree.getWidth() && santa.getY() == tree.getY()) || (santa.getX() == tree.getX() + tree.getWidth() && santa.getY() == tree.getY() + tree.getHeight())) {
-            if (!tree.areGiftsDelivered()) {
-                tree.deliverGifts();
-                if (tree.isDecorated()) {
-                    santa.deliverGifts(10);
-                }
-                else {
-                    santa.deliverGifts(5);
-                }
+    treesOnTheMap.forEach(function (tree, index) {
+        if (santa.collision(tree)) {
+            if (tree.isDecorated()) {
+                santa.deliverGifts(10);
             }
+            else {
+                santa.deliverGifts(5);
+            }
+            treesOnTheMap.splice(index, 1);
 
         }
     })
@@ -106,16 +105,16 @@ function update() {
 };
 
 // Draw everything on the canvas
-var render = function () {
+let render = function () {
     //display the background
     background.display();
     //display the number of gifts left
     context.strokeText("Cadeaux : " + santa.getGiftNumber().toString(), 10, 20);
     //display the money left
-    var giftsTextWidth = context.measureText("Cadeaux : " + santa.getGiftNumber().toString()).width;
+    let giftsTextWidth = context.measureText("Cadeaux : " + santa.getGiftNumber().toString()).width;
     context.strokeText("Argent : " + santa.getMoney(), giftsTextWidth + 20, 20);
     //display the time left
-    var timeLeftTextX = canvas.width - context.measureText(timeLeft).width - 10;
+    let timeLeftTextX = canvas.width - context.measureText(timeLeft).width - 10;
     context.strokeText(timeLeft, timeLeftTextX, 20);
     //display the trees
     treesOnTheMap.forEach(function (tree) {
@@ -135,7 +134,7 @@ function main() {
 };
 
 // Cross-browser support for requestAnimationFrame
-var w = window;
+let w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
 main();

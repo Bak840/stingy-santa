@@ -55,3 +55,16 @@ MobileSprite.prototype.changeFrontFoot = function () {
         this.changeFootCounter = 0;
     }
 }
+
+MobileSprite.prototype.collision = function (sprite) {
+    //collision by the right or the left
+    let rightLeft = ((this.x + this.width >= sprite.getX() && this.x + this.width <= sprite.getX() + sprite.getWidth()) || (this.x >= sprite.getX() && this.x <= sprite.getX() + sprite.getWidth())) && ((this.y >= sprite.getY() && this.y <= sprite.getY() + sprite.getHeight()) || (this.y + this.width >= sprite.getY() && this.y + this.width <= sprite.getY() + sprite.getHeight()));
+    //collision by above or below
+    let aboveBelow = ((this.y + this.height >= sprite.getY() && this.y + this.height <= sprite.getY() + sprite.getHeight()) || (this.y >= sprite.getY() && this.y <= sprite.getY() + sprite.getHeight())) && ((this.x >= sprite.getX() && this.x <= sprite.getX() + sprite.getWidth()) || (this.x + this.height >= sprite.getX() && this.x + this.height <= sprite.getX() + sprite.getWidth()))
+    if (rightLeft || aboveBelow) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
