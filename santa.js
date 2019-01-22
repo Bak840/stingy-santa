@@ -1,5 +1,5 @@
 function Santa(x, y, context) {
-    MobileSprite.call(this, 0, 208, x, y, 96, 64, "ressources/sprites/santa.png", context, 2, 204, 14, 110, 302, 0, 146);
+    MobileSprite.call(this, 0, 208, x, y, 96, 64, "ressources/sprites/santa.png", context, 1, 204, 14, 110, 302, 0, 146);
 
     this.giftNumber = 100;
     this.money = 100;

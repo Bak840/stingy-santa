@@ -12,28 +12,55 @@ let background = new Sprite(0, 0, 0, 0, 600, 800, "ressources/background.jpg", c
 
 let santa = new Santa(400, 300, context);
 
-let treesOnTheMap = [];
+let treesOnMap = new Map();
+let lastInsertedTreeIndex = 0;
+let elvesOnMap = [];
 function spawnTrees() {
-    treesOnTheMap = [];
     //generate a random number of trees between 1 and 3
-    let treesNumber = Math.floor(Math.random() * Math.floor(3)) + 1;
+    let treesNumber = Math.floor(Math.random() * Math.floor(2)) + 1;
     for (let i = 0; i < treesNumber; i++) {
+        let key = lastInsertedTreeIndex;
         //generate a random boolean to decide if we should spawn a decorated tree or not
-        if (Math.random() <= 0.33) {
-            let x = Math.floor(Math.random() * Math.floor(716)) + 20;
+        if (Math.random() <= 0.3) {
+            let x = Math.floor(Math.random() * Math.floor(736));
             let y = Math.floor(Math.random() * Math.floor(495)) + 20;
-            //generate a decorated tree 33% of the time
-            treesOnTheMap.push(new Tree(x, y, true));
+            //generate a decorated tree 30% of the time
+            treesOnMap.set(lastInsertedTreeIndex++, new Tree(x, y, true));
+            spawnElves(2);
+
+            setTimeout(function () {
+                treesOnMap.delete(key);
+            }, 10000);
         }
         else {
-            let x = Math.floor(Math.random() * Math.floor(719)) + 20;
+            let x = Math.floor(Math.random() * Math.floor(739));
             let y = Math.floor(Math.random() * Math.floor(509)) + 20;
-            //generate a non decorated tree 66% of the time
-            treesOnTheMap.push(new Tree(x, y, false));
+            //generate a non decorated tree 70% of the time
+            treesOnMap.set(lastInsertedTreeIndex++, new Tree(x, y, false));
+            spawnElves(1);
+
+            setTimeout(function () {
+                treesOnMap.delete(key);
+            }, 20000);
         }
     }
 }
 spawnTrees();
+
+function spawnElves(number) {
+    for (let i = 0; i < number; i++) {
+        if (Math.random() >= 0.5) {
+            let x = Math.floor(Math.random() * Math.floor(608));
+            let y = Math.floor(Math.random() * Math.floor(538)) + 20;
+            elvesOnMap.push(new Elf(x, y, true, context));
+        }
+        else {
+            let x = Math.floor(Math.random() * Math.floor(758));
+            let y = Math.floor(Math.random() * Math.floor(388)) + 20;
+            elvesOnMap.push(new Elf(x, y, false, context));
+        }
+    }
+}
 
 // Update the count down every second
 setInterval(function () {
@@ -45,6 +72,18 @@ setInterval(function () {
     let secondsLeft = Math.floor((distance % (1000 * 60)) / 1000);
     timeLeft = "Temps restant : " + minutesLeft + "m" + secondsLeft + "s";
 }, 1000);
+
+setInterval(function () {
+    elvesOnMap.forEach(function (elf) {
+        if (santa.collision(elf)) {
+            santa.looseMoney();
+        }
+    })
+}, 250);
+
+setInterval(function () {
+    spawnTrees();
+}, 10000);
 
 // Handle keyboard controls
 let keysDown = {};
@@ -89,7 +128,7 @@ function update() {
 
     }
 
-    treesOnTheMap.forEach(function (tree, index) {
+    treesOnMap.forEach(function (tree, key) {
         if (santa.collision(tree)) {
             if (tree.isDecorated()) {
                 santa.deliverGifts(10);
@@ -97,11 +136,9 @@ function update() {
             else {
                 santa.deliverGifts(5);
             }
-            treesOnTheMap.splice(index, 1);
-
+            treesOnMap.delete(key);
         }
     })
-
 };
 
 // Draw everything on the canvas
@@ -117,9 +154,14 @@ let render = function () {
     let timeLeftTextX = canvas.width - context.measureText(timeLeft).width - 10;
     context.strokeText(timeLeft, timeLeftTextX, 20);
     //display the trees
-    treesOnTheMap.forEach(function (tree) {
+    treesOnMap.forEach(function (tree) {
         tree.display();
-    })
+    });
+    //display the elves
+    elvesOnMap.forEach(function (elf) {
+        elf.display();
+        elf.moveAuto();
+    });
     //display Santa Claus
     santa.display();
 };
