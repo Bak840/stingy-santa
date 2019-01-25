@@ -14,11 +14,45 @@ let santa = new Santa(400, 300, context);
 
 let ball = new Sprite(0, 0, 801, 601, 30, 30, "ressources/sprites/ball.png", context);
 
+//if in quiz mode time is stopped until we resume
+let quizMode = false;
+//where we will display the quizz
+var quizContainer = document.getElementById('quiz');
+let quiz = new Quiz(quizContainer);
+// on submit, check wether or not we should give more money to santa
+var submitButton = document.getElementById('submit');
+submitButton.onclick = function () {
+    quizMode = false;
+    santa.setSpeed(1);
+    if (quiz.checkResults()) {
+        santa.setMoney(50);
+    }
+}
+
+//played when santa delivers gifts under a tree
+let santaHoHoHo = new Audio("ressources/sounds/santa_ho_ho_ho.mp3");
+santaHoHoHo.loop = false;
+//played when santa touches an elf
+let coinDrop = new Audio("ressources/sounds/coin_drop.mp3");
+coinDrop.loop = false;
+//played when the christmas ball spawns
+let ballSpawn = new Audio("ressources/sounds/ball_spawn.mp3");
+ballSpawn.loop = false;
+//played when santa touches the christmas ball
+let ballModeTheme = new Audio("ressources/sounds/ball_mode.mp3");
+ballModeTheme.loop = false;
+
+//if the game is in ball mode all the elves cannot move
 let ballMode = false;
 
+//represent the trees present on the map
+//I choose a Map to associate each tree with his index and remove them from the canvas safely
 let treesOnMap = new Map();
+//keep track of the total number of trees generated and allow me to delete a tree based on his index even after other trees have spawned
 let lastInsertedTreeIndex = 0;
+//represent the elves present on the map
 let elvesOnMap = [];
+
 function spawnTrees() {
     //generate a random number of trees between 1 and 3
     let treesNumber = Math.floor(Math.random() * Math.floor(2)) + 1;
@@ -26,6 +60,7 @@ function spawnTrees() {
         let key = lastInsertedTreeIndex;
         //generate a random boolean to decide if we should spawn a decorated tree or not
         if (Math.random() <= 0.3) {
+            //generate random coordinates on the map
             let x = Math.floor(Math.random() * Math.floor(736));
             let y = Math.floor(Math.random() * Math.floor(495)) + 20;
             //generate a decorated tree 30% of the time
@@ -54,7 +89,6 @@ spawnTrees();
 function spawnElves(number) {
     for (let i = 0; i < number; i++) {
         if (Math.random() >= 0.5) {
-            //generate random coordinates on the map
             let x = Math.floor(Math.random() * Math.floor(608));
             let y = Math.floor(Math.random() * Math.floor(538)) + 20;
             elvesOnMap.push(new Elf(x, y, true, context));
@@ -77,14 +111,19 @@ setInterval(function () {
     let secondsLeft = Math.floor((distance % (1000 * 60)) / 1000);
     timeLeft = "Temps restant : " + minutesLeft + "m" + secondsLeft + "s";
 }, 1000);
-//check if santa has touched an elf every 0.25 second
+
+//check if santa has touched an elf every 0.2 second
 setInterval(function () {
     elvesOnMap.forEach(function (elf) {
         if (santa.collision(elf)) {
-            santa.looseMoney();
+            santa.setMoney(-5);
+            if (coinDrop.paused) {
+                coinDrop.play();
+            }
         }
     })
-}, 250);
+}, 200);
+
 //spawn trees every 10 seconds
 setInterval(function () {
     spawnTrees();
@@ -95,6 +134,7 @@ setTimeout(function () {
     let x = Math.floor(Math.random() * Math.floor(770));
     let y = Math.floor(Math.random() * Math.floor(550)) + 20;
     ball.moveTo(x, y);
+    ballSpawn.play();
 }, 60000);
 
 //make the christmas ball disappear after 1m10s
@@ -107,12 +147,26 @@ setTimeout(function () {
     let x = Math.floor(Math.random() * Math.floor(770));
     let y = Math.floor(Math.random() * Math.floor(550)) + 20;
     ball.moveTo(x, y);
+    ballSpawn.play();
 }, 140000);
 
 //make the christmas ball disappear again when there is 1m left
 setTimeout(function () {
     ball.moveTo(801, 601);
-}, 70000);
+}, 150000);
+
+//quiz at mid-time
+setTimeout(function () {
+    quiz.show();
+    quizMode = true;
+}, 105000);
+
+//speed up all the elves when there are 20s left
+setTimeout(function () {
+    elvesOnMap.forEach(function (elf) {
+        elf.setSpeed(2);
+    })
+}, 190000);
 
 // Handle keyboard controls
 let keysDown = {};
@@ -159,11 +213,12 @@ function update() {
 
     treesOnMap.forEach(function (tree, key) {
         if (santa.collision(tree)) {
+            santaHoHoHo.play();
             if (tree.isDecorated()) {
-                santa.deliverGifts(10);
+                santa.setGifts(-10);
             }
             else {
-                santa.deliverGifts(5);
+                santa.setGifts(-5);
             }
             treesOnMap.delete(key);
         }
@@ -171,9 +226,10 @@ function update() {
 
     if (santa.collision(ball)) {
         ballMode = true;
+        ballModeTheme.play();
+        ball.moveTo(801, 601);
         //make the christmas ball disappear 15s after it appeared
         setTimeout(function () {
-            ball.moveTo(801, 601);
             ballMode = false;
         }, 15000);
     }
@@ -181,35 +237,39 @@ function update() {
 
 //Check game status
 function checkGameStatus() {
-    //if we touch the christmas ball all the elves freeze
-    if (ballMode) {
-        elvesOnMap.forEach(function (elf) {
+    elvesOnMap.forEach(function (elf) {
+        if (ballMode || quizMode || santa.getMoney() <= 0 || countDownDate - new Date().getTime() <= 0 || santa.getGifts() <= 0) {
+            //freezz the elves
             if (elf.getSpeed() !== 0) {
                 elf.setSpeed(0);
             }
-        })
-    }
-    else {
-        elvesOnMap.forEach(function (elf) {
+        }
+        else {
             if (elf.getSpeed() === 0) {
                 elf.setSpeed(1);
             }
-        })
+        }
+
+    })
+    if (quizMode || santa.getMoney() <= 0 || countDownDate - new Date().getTime() <= 0 || santa.getGifts() <= 0) {
+        //freeze santa
+        santa.setSpeed(0);
+    }
+    //show/hide the quizz
+    if (quizMode) {
+        quizContainer.style.visibility = "visible";
+        submitButton.style.visibility = "visible";
+    }
+    else {
+        quizContainer.style.visibility = "hidden";
+        submitButton.style.visibility = "hidden";
     }
     //if time is up or you don't have money anymore you lost
     if (santa.getMoney() <= 0 || countDownDate - new Date().getTime() <= 0) {
-        santa.setSpeed(0);
-        elvesOnMap.forEach(function (elf) {
-            elf.setSpeed(0);
-        })
         alert(`You loose with ${santa.getGifts()} gifts remaining`);
     }
     //if you manage to deliver all the gifts you won
     if (santa.getGifts() <= 0) {
-        santa.setSpeed(0);
-        elvesOnMap.forEach(function (elf) {
-            elf.setSpeed(0);
-        })
         alert(`You won with ${santa.getMoney()} euros`);
     }
 }
@@ -243,7 +303,7 @@ function render() {
 
 function main() {
     // run the update function
-    update(); // do not change
+    update();
     // run the render function
     render();
     //check wether or not the game is finished

@@ -10,6 +10,7 @@ function Elf(x, y, dir, context) {
     else {
         this.start = y;
     }
+    //from one point to another and vice versa
     this.orientation = true;
 }
 
@@ -20,8 +21,8 @@ Elf.prototype.constructor = Elf;
 Elf.prototype.moveAuto = function () {
     if (this.dir) {
         if (this.orientation) {
-            if (this.x != this.start + 150) {
-                this.move(1, 0);
+            if (this.x <= this.start + 150) {
+                this.moveBy(1, 0);
             }
             else {
                 this.orientation = !this.orientation;
@@ -29,7 +30,7 @@ Elf.prototype.moveAuto = function () {
         }
         else {
             if (this.x != this.start) {
-                this.move(-1, 0);
+                this.moveBy(-1, 0);
             }
             else {
                 this.orientation = !this.orientation;
@@ -38,8 +39,8 @@ Elf.prototype.moveAuto = function () {
     }
     else {
         if (this.orientation) {
-            if (this.y != this.start + 150) {
-                this.move(0, 1);
+            if (this.y <= this.start + 150) {
+                this.moveBy(0, 1);
             }
             else {
                 this.orientation = !this.orientation;
@@ -47,7 +48,7 @@ Elf.prototype.moveAuto = function () {
         }
         else {
             if (this.y != this.start) {
-                this.move(0, -1);
+                this.moveBy(0, -1);
             }
             else {
                 this.orientation = !this.orientation;

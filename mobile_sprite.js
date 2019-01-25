@@ -34,16 +34,16 @@ MobileSprite.prototype.setSpeed = function(speed){
 }
 
 MobileSprite.prototype.changeOrientation = function (x, y) {
-    if (x == 1) {
+    if (x === 1) {
         this.sy = this.rightDir;
     }
-    else if (x == -1) {
+    else if (x === -1) {
         this.sy = this.leftDir;
     }
-    if (y == 1) {
+    if (y === 1) {
         this.sy = this.downDir;
     }
-    else if (y == -1) {
+    else if (y === -1) {
         this.sy = this.upDir;
     }
 }

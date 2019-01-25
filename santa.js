@@ -16,10 +16,10 @@ Santa.prototype.getMoney = function () {
     return this.money;
 }
 
-Santa.prototype.deliverGifts = function (number) {
-    this.gifts -= number;
+Santa.prototype.setGifts = function (gifts) {
+    this.gifts += gifts;
 }
 
-Santa.prototype.looseMoney = function () {
-    this.money -= 5;
+Santa.prototype.setMoney = function (money) {
+    this.money += money;
 }

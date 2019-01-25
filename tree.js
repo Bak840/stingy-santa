@@ -11,7 +11,7 @@ Tree.prototype = Object.create(Sprite.prototype);
 Tree.prototype.constructor = Tree;
 
 Tree.prototype.isDecorated = function () {
-    if (this.width == 85) {
+    if (this.width === 85) {
         return true;
     }
     else {
