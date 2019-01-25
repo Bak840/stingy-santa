@@ -27,6 +27,11 @@ Sprite.prototype.getWidth = function () {
     return this.width;
 }
 
+Sprite.prototype.moveTo = function(x, y){
+    this.x = x;
+    this.y = y;
+}
+
 Sprite.prototype.display = function () {
     context.drawImage(this.img, this.sx, this.sy, this.width, this.height, this.x, this.y, this.width, this.height);
 }

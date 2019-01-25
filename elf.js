@@ -26,7 +26,7 @@ Elf.prototype.moveAuto = function () {
                 this.orientation = !this.orientation;
             }
         }
-        else{
+        else {
             if (this.x != this.start) {
                 this.move(-1, 0);
             }
@@ -44,7 +44,7 @@ Elf.prototype.moveAuto = function () {
                 this.orientation = !this.orientation;
             }
         }
-        else{
+        else {
             if (this.y != this.start) {
                 this.move(0, -1);
             }

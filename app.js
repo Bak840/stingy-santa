@@ -12,6 +12,10 @@ let background = new Sprite(0, 0, 0, 0, 600, 800, "ressources/background.jpg", c
 
 let santa = new Santa(400, 300, context);
 
+let ball = new Sprite(0, 0, 801, 601, 30, 30, "ressources/sprites/ball.png", context);
+
+let ballMode = false;
+
 let treesOnMap = new Map();
 let lastInsertedTreeIndex = 0;
 let elvesOnMap = [];
@@ -65,14 +69,14 @@ function spawnElves(number) {
 // Update the count down every second
 setInterval(function () {
     // Find the distance between now and the count down date
-    let distance = countDownDate - new Date().getTime();;
+    let distance = countDownDate - new Date().getTime();
 
     // Time calculations for minutes and seconds
     let minutesLeft = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     let secondsLeft = Math.floor((distance % (1000 * 60)) / 1000);
     timeLeft = "Temps restant : " + minutesLeft + "m" + secondsLeft + "s";
 }, 1000);
-
+//check if santa has touched an elf every 0.25 second
 setInterval(function () {
     elvesOnMap.forEach(function (elf) {
         if (santa.collision(elf)) {
@@ -80,10 +84,34 @@ setInterval(function () {
         }
     })
 }, 250);
-
+//spawn trees every 10 seconds
 setInterval(function () {
     spawnTrees();
 }, 10000);
+
+//make the christmas ball appear after 1m
+setTimeout(function () {
+    let x = Math.floor(Math.random() * Math.floor(770));
+    let y = Math.floor(Math.random() * Math.floor(550)) + 20;
+    ball.moveTo(x, y);
+}, 60000);
+
+//make the christmas ball disappear after 1m10s
+setTimeout(function () {
+    ball.moveTo(801, 601);
+}, 70000);
+
+//make the christmas ball appear again when there is 1m10s left
+setTimeout(function () {
+    let x = Math.floor(Math.random() * Math.floor(770));
+    let y = Math.floor(Math.random() * Math.floor(550)) + 20;
+    ball.moveTo(x, y);
+}, 140000);
+
+//make the christmas ball disappear again when there is 1m left
+setTimeout(function () {
+    ball.moveTo(801, 601);
+}, 70000);
 
 // Handle keyboard controls
 let keysDown = {};
@@ -139,10 +167,51 @@ function update() {
             treesOnMap.delete(key);
         }
     })
+
+    if (santa.collision(ball)) {
+        ballMode = true;
+        //make the christmas ball disappear after 1m10s
+        setTimeout(function () {
+            ball.moveTo(801, 601);
+            ballMode = false;
+        }, 15000);
+    }
 };
 
+//Check game status
+function checkGameStatus() {
+    if (ballMode) {
+        elvesOnMap.forEach(function (elf) {
+            if (elf.getSpeed() !== 0) {
+                elf.setSpeed(0);
+            }
+        })
+    }
+    else {
+        elvesOnMap.forEach(function (elf) {
+            if (elf.getSpeed() === 0) {
+                elf.setSpeed(1);
+            }
+        })
+    }
+    if (santa.getMoney() <= 0 || countDownDate - new Date().getTime() <= 0) {
+        santa.setSpeed(0);
+        elvesOnMap.forEach(function (elf) {
+            elf.setSpeed(0);
+        })
+        alert(`You loose with ${santa.getGiftNumber()} gifts remaining`);
+    }
+    if (santa.getGiftNumber() <= 0) {
+        santa.setSpeed(0);
+        elvesOnMap.forEach(function (elf) {
+            elf.setSpeed(0);
+        })
+        alert(`You won with ${santa.getMoney()} euros`);
+    }
+}
+
 // Draw everything on the canvas
-let render = function () {
+function render() {
     //display the background
     background.display();
     //display the number of gifts left
@@ -162,6 +231,8 @@ let render = function () {
         elf.display();
         elf.moveAuto();
     });
+    //display the christmas ball
+    ball.display();
     //display Santa Claus
     santa.display();
 };
@@ -171,6 +242,8 @@ function main() {
     update(); // do not change
     // run the render function
     render();
+    //check wether or not the game is finished
+    checkGameStatus();
     // Request to do this again ASAP
     requestAnimationFrame(main);
 };

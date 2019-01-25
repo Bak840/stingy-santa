@@ -25,6 +25,14 @@ MobileSprite.prototype.move = function (x, y) {
     this.y += y * this.speed;
 }
 
+MobileSprite.prototype.getSpeed = function(){
+    return this.speed;
+}
+
+MobileSprite.prototype.setSpeed = function(speed){
+    this.speed = speed;
+}
+
 MobileSprite.prototype.changeOrientation = function (x, y) {
     if (x == 1) {
         this.sy = this.rightDir;
