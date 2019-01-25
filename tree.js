@@ -5,22 +5,16 @@ function Tree(x, y, decorated) {
     else {
         Sprite.call(this, 293, 215, x, y, 71, 61, "ressources/sprites/trees.png");
     }
-
-    this.decorated = decorated;
-    this.giftsDelivered = false;
 }
 
 Tree.prototype = Object.create(Sprite.prototype);
 Tree.prototype.constructor = Tree;
 
 Tree.prototype.isDecorated = function () {
-    return this.decorated;
-}
-
-Tree.prototype.areGiftsDelivered = function () {
-    return this.giftsDelivered;
-}
-
-Tree.prototype.deliverGifts = function () {
-    this.giftsDelivered = true;
+    if (this.width == 85) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }

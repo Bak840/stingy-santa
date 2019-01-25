@@ -5,7 +5,7 @@ context.strokeStyle = "red";
 
 //count down to the actual date plus 3 minutes and 30 seconds that is 210,000 milliseconds
 let countDownDate = new Date(new Date().getTime() + 210000);
-//time left
+
 let timeLeft = "Temps restant : 3m30s";
 
 let background = new Sprite(0, 0, 0, 0, 600, 800, "ressources/background.jpg", context);
@@ -54,6 +54,7 @@ spawnTrees();
 function spawnElves(number) {
     for (let i = 0; i < number; i++) {
         if (Math.random() >= 0.5) {
+            //generate random coordinates on the map
             let x = Math.floor(Math.random() * Math.floor(608));
             let y = Math.floor(Math.random() * Math.floor(538)) + 20;
             elvesOnMap.push(new Elf(x, y, true, context));
@@ -130,28 +131,28 @@ addEventListener("keyup", function (key) {
 function update() {
     if (38 in keysDown) { // Player is holding up key
         if (santa.getY() >= 20) {
-            santa.move(0, -1);
+            santa.moveBy(0, -1);
         }
 
     }
     if (40 in keysDown) { // Player is holding down key
         santa.sy = 204;
         if (santa.getY() <= canvas.height - santa.getHeight()) {
-            santa.move(0, 1);
+            santa.moveBy(0, 1);
         }
 
     }
     if (37 in keysDown) { // Player is holding left key
         santa.sy = 302;
         if (santa.getX() >= 0) {
-            santa.move(-1, 0);
+            santa.moveBy(-1, 0);
         }
 
     }
     if (39 in keysDown) { // Player is holding right key
         santa.sy = 110;
         if (santa.getX() <= canvas.width - santa.getWidth()) {
-            santa.move(1, 0);
+            santa.moveBy(1, 0);
         }
 
     }
@@ -170,7 +171,7 @@ function update() {
 
     if (santa.collision(ball)) {
         ballMode = true;
-        //make the christmas ball disappear after 1m10s
+        //make the christmas ball disappear 15s after it appeared
         setTimeout(function () {
             ball.moveTo(801, 601);
             ballMode = false;
@@ -180,6 +181,7 @@ function update() {
 
 //Check game status
 function checkGameStatus() {
+    //if we touch the christmas ball all the elves freeze
     if (ballMode) {
         elvesOnMap.forEach(function (elf) {
             if (elf.getSpeed() !== 0) {
@@ -194,14 +196,16 @@ function checkGameStatus() {
             }
         })
     }
+    //if time is up or you don't have money anymore you lost
     if (santa.getMoney() <= 0 || countDownDate - new Date().getTime() <= 0) {
         santa.setSpeed(0);
         elvesOnMap.forEach(function (elf) {
             elf.setSpeed(0);
         })
-        alert(`You loose with ${santa.getGiftNumber()} gifts remaining`);
+        alert(`You loose with ${santa.getGifts()} gifts remaining`);
     }
-    if (santa.getGiftNumber() <= 0) {
+    //if you manage to deliver all the gifts you won
+    if (santa.getGifts() <= 0) {
         santa.setSpeed(0);
         elvesOnMap.forEach(function (elf) {
             elf.setSpeed(0);
@@ -215,9 +219,9 @@ function render() {
     //display the background
     background.display();
     //display the number of gifts left
-    context.strokeText("Cadeaux : " + santa.getGiftNumber().toString(), 10, 20);
+    context.strokeText("Cadeaux : " + santa.getGifts().toString(), 10, 20);
     //display the money left
-    let giftsTextWidth = context.measureText("Cadeaux : " + santa.getGiftNumber().toString()).width;
+    let giftsTextWidth = context.measureText("Cadeaux : " + santa.getGifts().toString()).width;
     context.strokeText("Argent : " + santa.getMoney(), giftsTextWidth + 20, 20);
     //display the time left
     let timeLeftTextX = canvas.width - context.measureText(timeLeft).width - 10;

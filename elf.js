@@ -3,6 +3,7 @@ function Elf(x, y, dir, context) {
 
     this.dir = dir;
     this.start;
+    //decide whether the elf should move horizontally or vertically
     if (dir) {
         this.start = x;
     }
@@ -15,8 +16,8 @@ function Elf(x, y, dir, context) {
 Elf.prototype = Object.create(MobileSprite.prototype);
 Elf.prototype.constructor = Elf;
 
+//move the elf on 150 pixels
 Elf.prototype.moveAuto = function () {
-    let step = this.orientation == true ? 1 : -1;
     if (this.dir) {
         if (this.orientation) {
             if (this.x != this.start + 150) {

@@ -17,7 +17,7 @@ function MobileSprite(sx, sy, x, y, height, width, imgSrc, context, speed, downD
 MobileSprite.prototype = Object.create(Sprite.prototype);
 MobileSprite.prototype.constructor = MobileSprite;
 
-MobileSprite.prototype.move = function (x, y) {
+MobileSprite.prototype.moveBy = function (x, y) {
     this.changeOrientation(x, y);
     this.changeFrontFoot();
 
